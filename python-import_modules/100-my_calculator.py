@@ -8,9 +8,16 @@ if __name__ == "__main__":
         print("Usage: ./100-my_calculator.py <a> <operator> <b>")
         sys.exit(1)
 
-    a = int(sys.argv[1])
+    a = sys.argv[1]
     operator = sys.argv[2]
-    b = int(sys.argv[3])
+    b = sys.argv[3]
+
+    if not a.lstrip('-').isdigit() or not b.lstrip('-').isdigit():
+        print("Unknown operator. Only: +, -, * and /")
+        sys.exit(1)
+
+    a = int(a)
+    b = int(b)
 
     if operator == "+":
         print(f"{a} + {b} = {add(a, b)}")
