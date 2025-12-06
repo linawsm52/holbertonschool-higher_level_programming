@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 def roman_to_int(roman_string):
-    if not isinstance(roman_string, str) or roman_string is None:
+    if roman_string is None or type(roman_string) is not str:
         return 0
 
     roman_map = {
@@ -9,14 +9,20 @@ def roman_to_int(roman_string):
     }
 
     total = 0
-    prev = 0
+    i = 0
+    length = len(roman_string)
 
-    for char in reversed(roman_string):
-        value = roman_map.get(char, 0)
-        if value >= prev:
-            total += value
-        else:
-            total -= value
-        prev = value
+    while i < length:
+        value = roman_map.get(roman_string[i], 0)
+
+        if i + 1 < length:
+            next_value = roman_map.get(roman_string[i + 1], 0)
+            if value < next_value:
+                total += next_value - value
+                i += 2
+                continue
+
+        total += value
+        i += 1
 
     return total
