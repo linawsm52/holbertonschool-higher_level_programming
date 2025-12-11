@@ -1,4 +1,0 @@
-#!/usr/bin/python3
-def hello_user():
-  x = input("enter your name please")
-  print(f"wlcome {x}")
