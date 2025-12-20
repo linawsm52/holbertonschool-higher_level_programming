@@ -1,18 +1,16 @@
 #!/usr/bin/python3
-"""
-BaseGeometry module
-"""
+"""BaseGeometry module"""
 
 
 class BaseGeometry:
     """BaseGeometry class"""
 
     def area(self):
-        """Raises an Exception"""
+        """Raise an Exception"""
         raise Exception("area() is not implemented")
 
     def integer_validator(self, name, value):
-        """Validates value as a positive integer"""
+        """Validate integer value"""
         if type(value) is not int:
             raise TypeError(f"{name} must be an integer")
         if value <= 0:
