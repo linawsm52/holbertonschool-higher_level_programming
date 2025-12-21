@@ -3,15 +3,20 @@
 
 
 def add_integer(a, b=98):
-    """Adds 2 integers."""
+    """Return the addition of a and b."""
     if type(a) not in (int, float):
         raise TypeError("a must be an integer")
     if type(b) not in (int, float):
         raise TypeError("b must be an integer")
 
-    if a != a or a == float("inf") or a == float("-inf"):
+    try:
+        a = int(a)
+    except (ValueError, OverflowError):
         raise TypeError("a must be an integer")
-    if b != b or b == float("inf") or b == float("-inf"):
+
+    try:
+        b = int(b)
+    except (ValueError, OverflowError):
         raise TypeError("b must be an integer")
 
-    return int(a) + int(b)
+    return a + b
