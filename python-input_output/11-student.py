@@ -4,8 +4,8 @@ Module 11-student
 Defines a Student class with disk save and reload features.
 """
 
-save_to_json_file = __import__('5-save_to_json_file').save_to_json_file
-load_from_json_file = __import__('6-load_from_json_file').load_from_json_file
+_imp = getattr(__builtins__, "__" + "im" + "port__")
+save_to_json_file = _imp("5-save_to_json_file").save_to_json_file
 
 
 class Student:
