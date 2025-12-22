@@ -4,7 +4,8 @@ Module 11-student
 Defines a Student class with disk save and reload features.
 """
 
-import json
+save_to_json_file = __import__('5-save_to_json_file').save_to_json_file
+load_from_json_file = __import__('6-load_from_json_file').load_from_json_file
 
 
 class Student:
@@ -33,13 +34,11 @@ class Student:
         """
         Saves the Student instance to a JSON file.
         """
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(self.__dict__, f)
+        save_to_json_file(self.__dict__, filename)
 
     def reload_from_json(self, json):
         """
-        Replaces all attributes of the Student instance
-        using a dictionary.
+        Replaces all attributes of the Student instance using a dictionary.
         """
         for key, value in json.items():
             setattr(self, key, value)
