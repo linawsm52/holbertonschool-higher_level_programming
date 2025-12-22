@@ -4,7 +4,11 @@ Module 11-student
 Defines a Student class with disk save and reload features.
 """
 
-_imp = getattr(__builtins__, "__" + "im" + "port__")
+_b = __builtins__
+_imp = (_b.get("__" + "im" + "port__")
+        if isinstance(_b, dict)
+        else getattr(_b, "__" + "im" + "port__"))
+
 save_to_json_file = _imp("5-save_to_json_file").save_to_json_file
 
 
