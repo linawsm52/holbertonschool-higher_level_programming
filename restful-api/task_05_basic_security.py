@@ -6,6 +6,7 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
+from werkzeug.security import generate_password_hash, check_password_hash
 import base64
 
 app = Flask(__name__)
@@ -13,8 +14,16 @@ app.config["JWT_SECRET_KEY"] = "super-secret-key"
 jwt = JWTManager(app)
 
 users = {
-    "admin": {"username": "admin", "password": "adminpass", "role": "admin"},
-    "user": {"username": "user", "password": "userpass", "role": "user"},
+    "user1": {
+        "username": "user1",
+        "password": generate_password_hash("password"),
+        "role": "user",
+    },
+    "admin1": {
+        "username": "admin1",
+        "password": generate_password_hash("password"),
+        "role": "admin",
+    },
 }
 
 
@@ -72,7 +81,7 @@ def login():
     password = data.get("password")
 
     user = users.get(username)
-    if not user or user.get("password") != password:
+    if not user or not check_password_hash(user["password"], password):
         return jsonify({"error": "Invalid credentials"}), 401
 
     token = create_access_token(identity=username)
@@ -86,7 +95,7 @@ def basic_protected():
         return jsonify({"error": "Unauthorized"}), 401
 
     user = users.get(username)
-    if not user or user.get("password") != password:
+    if not user or not check_password_hash(user["password"], password):
         return jsonify({"error": "Unauthorized"}), 401
 
     return jsonify({"message": "Basic Auth: Access Granted"}), 200
@@ -112,4 +121,3 @@ def admin_only():
 
 if __name__ == "__main__":
     app.run()
-
