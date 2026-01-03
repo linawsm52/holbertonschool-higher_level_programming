@@ -109,7 +109,7 @@ def admin_only():
     user = users.get(username)
 
     if not user or user.get("role") != "admin":
-        return "Admin access required", 403
+        return jsonify({"error": "Admin access required"}), 403
 
     return "Admin Access: Granted", 200
 
