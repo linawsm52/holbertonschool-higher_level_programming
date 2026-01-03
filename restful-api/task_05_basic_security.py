@@ -6,9 +6,9 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
+import base64
 
 app = Flask(__name__)
-
 app.config["JWT_SECRET_KEY"] = "super-secret-key"
 jwt = JWTManager(app)
 
@@ -19,24 +19,41 @@ users = {
 
 
 @jwt.unauthorized_loader
-def unauthorized(error):
+def unauthorized(_err):
     return jsonify({"error": "Missing or invalid token"}), 401
 
 
 @jwt.invalid_token_loader
-def invalid_token(error):
+def invalid_token(_err):
     return jsonify({"error": "Invalid token"}), 401
 
 
 @jwt.expired_token_loader
-def expired_token(jwt_header, jwt_payload):
+def expired_token(_jwt_header, _jwt_payload):
     return jsonify({"error": "Token has expired"}), 401
+
+
+def _parse_basic_auth():
+    auth = request.headers.get("Authorization", "")
+    if not auth.startswith("Basic "):
+        return None, None
+
+    b64_part = auth.split(" ", 1)[1].strip()
+    try:
+        decoded = base64.b64decode(b64_part).decode("utf-8")
+    except Exception:
+        return None, None
+
+    if ":" not in decoded:
+        return None, None
+
+    username, password = decoded.split(":", 1)
+    return username, password
 
 
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json(silent=True)
-
     if not data:
         return jsonify({"error": "Invalid credentials"}), 401
 
@@ -44,8 +61,7 @@ def login():
     password = data.get("password")
 
     user = users.get(username)
-
-    if not user or user["password"] != password:
+    if not user or user.get("password") != password:
         return jsonify({"error": "Invalid credentials"}), 401
 
     token = create_access_token(identity=username)
@@ -54,14 +70,12 @@ def login():
 
 @app.route("/basic-protected", methods=["GET"])
 def basic_protected():
-    auth = request.authorization
-
-    if not auth:
+    username, password = _parse_basic_auth()
+    if not username:
         return jsonify({"error": "Unauthorized"}), 401
 
-    user = users.get(auth.username)
-
-    if not user or user["password"] != auth.password:
+    user = users.get(username)
+    if not user or user.get("password") != password:
         return jsonify({"error": "Unauthorized"}), 401
 
     return jsonify({"message": "Basic Auth: Access Granted"}), 200
