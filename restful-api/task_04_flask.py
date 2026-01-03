@@ -1,13 +1,8 @@
 #!/usr/bin/python3
-"""
-Task 4: Develop a Simple API using Python with Flask
-"""
-
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-# In-memory users storage
 users = {
     "jane": {"username": "jane", "name": "Jane", "age": 28, "city": "Los Angeles"},
     "john": {"username": "john", "name": "John", "age": 30, "city": "New York"},
@@ -21,7 +16,12 @@ def home():
 
 @app.route("/status", methods=["GET"])
 def status():
-    return jsonify({"status": "OK"}), 200
+    return "OK", 200
+
+
+@app.route("/data", methods=["GET"])
+def data():
+    return jsonify(users), 200
 
 
 @app.route("/users", methods=["GET"])
@@ -39,12 +39,12 @@ def get_user(username):
 
 @app.route("/add_user", methods=["POST"])
 def add_user():
-    data = request.get_json(silent=True)
+    data_json = request.get_json(silent=True)
 
-    if data is None:
+    if data_json is None:
         return jsonify({"error": "Invalid JSON"}), 400
 
-    username = data.get("username")
+    username = data_json.get("username")
     if not username:
         return jsonify({"error": "Username is required"}), 400
 
@@ -53,9 +53,9 @@ def add_user():
 
     user_obj = {
         "username": username,
-        "name": data.get("name"),
-        "age": data.get("age"),
-        "city": data.get("city"),
+        "name": data_json.get("name"),
+        "age": data_json.get("age"),
+        "city": data_json.get("city"),
     }
 
     users[username] = user_obj
