@@ -99,7 +99,7 @@ def basic_protected():
 @app.route("/jwt-protected", methods=["GET"])
 @jwt_required()
 def jwt_protected():
-    return jsonify({"message": "JWT Auth: Access Granted"}), 200
+    return "JWT Auth: Access Granted", 200
 
 
 @app.route("/admin-only", methods=["GET"])
