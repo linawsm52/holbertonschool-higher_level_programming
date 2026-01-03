@@ -53,8 +53,17 @@ def login():
 
 
 @app.route("/basic-protected", methods=["GET"])
-@jwt_required()
 def basic_protected():
+    auth = request.authorization
+
+    if not auth:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    user = users.get(auth.username)
+
+    if not user or user["password"] != auth.password:
+        return jsonify({"error": "Unauthorized"}), 401
+
     return jsonify({"message": "Basic Auth: Access Granted"}), 200
 
 
