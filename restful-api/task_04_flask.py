@@ -21,12 +21,7 @@ def status():
 
 @app.route("/data", methods=["GET"])
 def data():
-    return jsonify(users), 200
-
-
-@app.route("/users", methods=["GET"])
-def get_users():
-    return jsonify(list(users.keys())), 200
+    return jsonify(list(users.values())), 200
 
 
 @app.route("/users/<username>", methods=["GET"])
@@ -51,15 +46,15 @@ def add_user():
     if username in users:
         return jsonify({"error": "Username already exists"}), 409
 
-    user_obj = {
+    user = {
         "username": username,
         "name": data_json.get("name"),
         "age": data_json.get("age"),
         "city": data_json.get("city"),
     }
 
-    users[username] = user_obj
-    return jsonify({"message": "User added", "user": user_obj}), 201
+    users[username] = user
+    return jsonify({"message": "User added", "user": user}), 201
 
 
 if __name__ == "__main__":
