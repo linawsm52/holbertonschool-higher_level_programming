@@ -33,14 +33,25 @@ def expired_token(_jwt_header, _jwt_payload):
     return jsonify({"error": "Token has expired"}), 401
 
 
-def _parse_basic_auth():
+def _get_basic_credentials():
+    auth_obj = request.authorization
+    if auth_obj and auth_obj.username is not None and auth_obj.password is not None:
+        return auth_obj.username, auth_obj.password
+
     auth = request.headers.get("Authorization", "")
-    if not auth.startswith("Basic "):
+    if not auth:
         return None, None
 
-    b64_part = auth.split(" ", 1)[1].strip()
+    parts = auth.split(None, 1)
+    if len(parts) != 2:
+        return None, None
+
+    scheme, token = parts[0], parts[1].strip()
+    if scheme.lower() != "basic":
+        return None, None
+
     try:
-        decoded = base64.b64decode(b64_part).decode("utf-8")
+        decoded = base64.b64decode(token).decode("utf-8")
     except Exception:
         return None, None
 
@@ -70,7 +81,7 @@ def login():
 
 @app.route("/basic-protected", methods=["GET"])
 def basic_protected():
-    username, password = _parse_basic_auth()
+    username, password = _get_basic_credentials()
     if not username:
         return jsonify({"error": "Unauthorized"}), 401
 
