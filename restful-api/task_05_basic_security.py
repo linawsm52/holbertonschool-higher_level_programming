@@ -44,7 +44,7 @@ def expired_token(_jwt_header, _jwt_payload):
 
 def _get_basic_credentials():
     auth_obj = request.authorization
-    if auth_obj and auth_obj.username is not None and auth_obj.password is not None:
+    if auth_obj and auth_obj.username and auth_obj.password:
         return auth_obj.username, auth_obj.password
 
     auth = request.headers.get("Authorization", "")
@@ -52,23 +52,18 @@ def _get_basic_credentials():
         return None, None
 
     parts = auth.split(None, 1)
-    if len(parts) != 2:
-        return None, None
-
-    scheme, token = parts[0], parts[1].strip()
-    if scheme.lower() != "basic":
+    if len(parts) != 2 or parts[0].lower() != "basic":
         return None, None
 
     try:
-        decoded = base64.b64decode(token).decode("utf-8")
+        decoded = base64.b64decode(parts[1]).decode("utf-8")
     except Exception:
         return None, None
 
     if ":" not in decoded:
         return None, None
 
-    username, password = decoded.split(":", 1)
-    return username, password
+    return decoded.split(":", 1)
 
 
 @app.route("/login", methods=["POST"])
@@ -92,13 +87,13 @@ def login():
 def basic_protected():
     username, password = _get_basic_credentials()
     if not username:
-        return jsonify({"error": "Unauthorized"}), 401
+        return "Unauthorized", 401
 
     user = users.get(username)
     if not user or not check_password_hash(user["password"], password):
-        return jsonify({"error": "Unauthorized"}), 401
+        return "Unauthorized", 401
 
-    return jsonify({"message": "Basic Auth: Access Granted"}), 200
+    return "Basic Auth: Access Granted", 200
 
 
 @app.route("/jwt-protected", methods=["GET"])
