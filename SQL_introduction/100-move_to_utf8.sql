@@ -9,13 +9,11 @@ ALTER TABLE first_table
   CONVERT TO CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
--- Force the column to utf8mb4 (safe) ...
+-- Reset column definition to clear any explicit charset/collation flags
 ALTER TABLE first_table
-  MODIFY name VARCHAR(256)
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
+  MODIFY name VARCHAR(256);
 
--- ... then remove explicit charset so SHOW CREATE TABLE matches the checker
+-- Re-apply ONLY the required collation (without printing CHARACTER SET in SHOW CREATE)
 ALTER TABLE first_table
   MODIFY name VARCHAR(256)
   COLLATE utf8mb4_unicode_ci;
