@@ -5,15 +5,15 @@ ALTER DATABASE hbtn_0c_0
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-ALTER TABLE first_table
-  CONVERT TO CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS first_table_tmp (
+  id INT DEFAULT NULL,
+  name VARCHAR(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  score INT DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Reset column definition to clear any explicit charset/collation flags
-ALTER TABLE first_table
-  MODIFY name VARCHAR(256);
+INSERT INTO first_table_tmp (id, name, score)
+SELECT id, name, score FROM first_table;
 
--- Re-apply ONLY the required collation (without printing CHARACTER SET in SHOW CREATE)
-ALTER TABLE first_table
-  MODIFY name VARCHAR(256)
-  COLLATE utf8mb4_unicode_ci;
+DROP TABLE first_table;
+
+RENAME TABLE first_table_tmp TO first_table;
